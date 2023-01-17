@@ -88,97 +88,62 @@ internal class FruitListViewModelTest {
 
     @Test
     fun `Sorting by CARBOHYDRATES updates the state correctly`() {
-        fakeFruitApi.fruits = listOf(
+        nutritionSortTestCase(
+            fruits = listOf(
                 Fruit(name = "Apple", nutritions = Nutritions(carbohydrates = 10f)),
                 Fruit(name = "Banana", nutritions = Nutritions(carbohydrates = 22f)),
                 Fruit(name = "Cherry", nutritions = Nutritions(carbohydrates = 11f)),
-            )
-        systemUnderTest.initialize()
-
-        systemUnderTest.sortByNutrition(nutrition = FruitListViewModel.NutritionSortType.CARBOHYDRATES)
-
-        assertSoftly(systemUnderTest.fruits.value) {
-            systemUnderTest.fruits.value.shouldHaveSize(3)
-            systemUnderTest.fruits.value.get(0).name shouldBe "Apple"
-            systemUnderTest.fruits.value.get(1).name shouldBe "Cherry"
-            systemUnderTest.fruits.value.get(2).name shouldBe "Banana"
-        }
+            ),
+            type = FruitListViewModel.NutritionSortType.CARBOHYDRATES
+        )
     }
 
     @Test
     fun `Sorting by PROTEIN updates the state correctly`() {
-        fakeFruitApi.fruits = listOf(
+        nutritionSortTestCase(
+            fruits = listOf(
                 Fruit(name = "Apple", nutritions = Nutritions(protein = 10f)),
                 Fruit(name = "Banana", nutritions = Nutritions(protein = 22f)),
                 Fruit(name = "Cherry", nutritions = Nutritions(protein = 11f)),
-            )
-        systemUnderTest.initialize()
-
-        systemUnderTest.sortByNutrition(nutrition = FruitListViewModel.NutritionSortType.PROTEIN)
-
-        assertSoftly(systemUnderTest.fruits.value) {
-            systemUnderTest.fruits.value.shouldHaveSize(3)
-            systemUnderTest.fruits.value.get(0).name shouldBe "Apple"
-            systemUnderTest.fruits.value.get(1).name shouldBe "Cherry"
-            systemUnderTest.fruits.value.get(2).name shouldBe "Banana"
-        }
+            ),
+            type = FruitListViewModel.NutritionSortType.PROTEIN
+        )
     }
 
     @Test
     fun `Sorting by FAT updates the state correctly`() {
-        fakeFruitApi.fruits = listOf(
+        nutritionSortTestCase(
+            fruits = listOf(
                 Fruit(name = "Apple", nutritions = Nutritions(fat = 10f)),
                 Fruit(name = "Banana", nutritions = Nutritions(fat = 22f)),
                 Fruit(name = "Cherry", nutritions = Nutritions(fat = 11f)),
-            )
-        systemUnderTest.initialize()
-
-        systemUnderTest.sortByNutrition(nutrition = FruitListViewModel.NutritionSortType.FAT)
-
-        assertSoftly(systemUnderTest.fruits.value) {
-            systemUnderTest.fruits.value.shouldHaveSize(3)
-            systemUnderTest.fruits.value.get(0).name shouldBe "Apple"
-            systemUnderTest.fruits.value.get(1).name shouldBe "Cherry"
-            systemUnderTest.fruits.value.get(2).name shouldBe "Banana"
-        }
+            ),
+            type = FruitListViewModel.NutritionSortType.FAT
+        )
     }
 
     @Test
     fun `Sorting by CALORIES updates the state correctly`() {
-        fakeFruitApi.fruits = listOf(
+        nutritionSortTestCase(
+            fruits = listOf(
                 Fruit(name = "Apple", nutritions = Nutritions(calories = 10f)),
                 Fruit(name = "Banana", nutritions = Nutritions(calories = 22f)),
                 Fruit(name = "Cherry", nutritions = Nutritions(calories = 11f)),
-            )
-        systemUnderTest.initialize()
-
-        systemUnderTest.sortByNutrition(nutrition = FruitListViewModel.NutritionSortType.CALORIES)
-
-        assertSoftly(systemUnderTest.fruits.value) {
-            systemUnderTest.fruits.value.shouldHaveSize(3)
-            systemUnderTest.fruits.value.get(0).name shouldBe "Apple"
-            systemUnderTest.fruits.value.get(1).name shouldBe "Cherry"
-            systemUnderTest.fruits.value.get(2).name shouldBe "Banana"
-        }
+            ),
+            type = FruitListViewModel.NutritionSortType.CALORIES
+        )
     }
 
     @Test
     fun `Sorting by SUGAR updates the state correctly`() {
-        fakeFruitApi.fruits = listOf(
+        nutritionSortTestCase(
+            fruits = listOf(
                 Fruit(name = "Apple", nutritions = Nutritions(sugar = 10f)),
                 Fruit(name = "Banana", nutritions = Nutritions(sugar = 22f)),
                 Fruit(name = "Cherry", nutritions = Nutritions(sugar = 11f)),
-            )
-        systemUnderTest.initialize()
-
-        systemUnderTest.sortByNutrition(nutrition = FruitListViewModel.NutritionSortType.SUGAR)
-
-        assertSoftly(systemUnderTest.fruits.value) {
-            systemUnderTest.fruits.value.shouldHaveSize(3)
-            systemUnderTest.fruits.value.get(0).name shouldBe "Apple"
-            systemUnderTest.fruits.value.get(1).name shouldBe "Cherry"
-            systemUnderTest.fruits.value.get(2).name shouldBe "Banana"
-        }
+            ),
+            type = FruitListViewModel.NutritionSortType.SUGAR
+        )
     }
 
     @Test
@@ -299,6 +264,20 @@ internal class FruitListViewModelTest {
             get(0).name shouldBe "Apple"
             get(1).name shouldBe "Banana"
             get(2).name shouldBe "Cherry"
+        }
+    }
+
+    private fun nutritionSortTestCase(fruits: List<Fruit>, type: FruitListViewModel.NutritionSortType) {
+        fakeFruitApi.fruits = fruits
+        systemUnderTest.initialize()
+
+        systemUnderTest.sortByNutrition(nutrition = type)
+
+        assertSoftly(systemUnderTest.fruits.value) {
+            systemUnderTest.fruits.value.shouldHaveSize(3)
+            systemUnderTest.fruits.value.get(0).name shouldBe "Apple"
+            systemUnderTest.fruits.value.get(1).name shouldBe "Cherry"
+            systemUnderTest.fruits.value.get(2).name shouldBe "Banana"
         }
     }
 }
