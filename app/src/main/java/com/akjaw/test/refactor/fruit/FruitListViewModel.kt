@@ -33,20 +33,23 @@ class FruitListViewModel(
     }
 
     private var currentNutritionSort: Int = -1
-    private var currentSearchQuery: String = ""
-    private var originalFruits = emptyList<Fruit>()
-    private val mutableFruits = MutableStateFlow(originalFruits)
+    private val currentSearchQuery = MutableStateFlow("")
+    private val originalFruits = MutableStateFlow(emptyList<Fruit>())
+    private val mutableFruits = MutableStateFlow(originalFruits.value)
     val favoriteFruitIds = MutableStateFlow(emptyList<Int>())
     val fruits: StateFlow<List<Fruit>> = combine(
         mutableFruits,
+        currentSearchQuery,
         favoriteFruitIds,
-    ) { fruits, favoriteIds ->
-        fruits.sort(currentNutritionSort, favoriteIds)
+    ) { fruits, searchQuery, favoriteIds ->
+        fruits
+            .filter(searchQuery)
+            .sort(currentNutritionSort, favoriteIds)
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     fun initialize() = viewModelScope.launch {
-        originalFruits = fruitApi.getFruits()
-        filterByName(currentSearchQuery)
+        originalFruits.value = fruitApi.getFruits()
+        filterByName(currentSearchQuery.value)
     }
 
     fun sortByNutrition(nutrition: Int) {
@@ -56,19 +59,18 @@ class FruitListViewModel(
     }
 
     fun filterByName(searchQuery: String) {
-        currentSearchQuery = searchQuery
-        if (searchQuery == "") {
-            mutableFruits.value = originalFruits
-        } else {
-            mutableFruits.value = originalFruits.filter { it.name.contains(searchQuery, ignoreCase = true) }
-        }
-        sortByNutrition(currentNutritionSort)
+        currentSearchQuery.value = searchQuery
+        // TODO remove
+        mutableFruits.value = originalFruits.value.filter(searchQuery)
     }
 
     fun addToFavorite(fruitId: Int) {
         if (favoriteFruitIds.value.contains(fruitId)) return
         favoriteFruitIds.value = favoriteFruitIds.value + fruitId
     }
+
+    private fun List<Fruit>.filter(searchQuery: String) =
+        filter { it.name.contains(searchQuery, ignoreCase = true) }
 
     private fun List<Fruit>.sort(nutrition: Int, favoriteIds: List<Int>): List<Fruit> =
         when (nutrition) {
