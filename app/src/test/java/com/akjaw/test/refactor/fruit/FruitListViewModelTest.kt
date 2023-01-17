@@ -95,7 +95,12 @@ internal class FruitListViewModelTest {
                 Fruit(name = "Cherry", nutritions = Nutritions(carbohydrates = 11f)),
             ),
             type = FruitListViewModel.NutritionSortType.CARBOHYDRATES
-        )
+        ) {
+            systemUnderTest.fruits.value.shouldHaveSize(3)
+            systemUnderTest.fruits.value.get(0).name shouldBe "Apple"
+            systemUnderTest.fruits.value.get(1).name shouldBe "Cherry"
+            systemUnderTest.fruits.value.get(2).name shouldBe "Banana"
+        }
     }
 
     @Test
@@ -107,7 +112,12 @@ internal class FruitListViewModelTest {
                 Fruit(name = "Cherry", nutritions = Nutritions(protein = 11f)),
             ),
             type = FruitListViewModel.NutritionSortType.PROTEIN
-        )
+        ) {
+            systemUnderTest.fruits.value.shouldHaveSize(3)
+            systemUnderTest.fruits.value.get(0).name shouldBe "Apple"
+            systemUnderTest.fruits.value.get(1).name shouldBe "Cherry"
+            systemUnderTest.fruits.value.get(2).name shouldBe "Banana"
+        }
     }
 
     @Test
@@ -119,7 +129,12 @@ internal class FruitListViewModelTest {
                 Fruit(name = "Cherry", nutritions = Nutritions(fat = 11f)),
             ),
             type = FruitListViewModel.NutritionSortType.FAT
-        )
+        ) {
+            systemUnderTest.fruits.value.shouldHaveSize(3)
+            systemUnderTest.fruits.value.get(0).name shouldBe "Apple"
+            systemUnderTest.fruits.value.get(1).name shouldBe "Cherry"
+            systemUnderTest.fruits.value.get(2).name shouldBe "Banana"
+        }
     }
 
     @Test
@@ -131,7 +146,12 @@ internal class FruitListViewModelTest {
                 Fruit(name = "Cherry", nutritions = Nutritions(calories = 11f)),
             ),
             type = FruitListViewModel.NutritionSortType.CALORIES
-        )
+        ) {
+            systemUnderTest.fruits.value.shouldHaveSize(3)
+            systemUnderTest.fruits.value.get(0).name shouldBe "Apple"
+            systemUnderTest.fruits.value.get(1).name shouldBe "Cherry"
+            systemUnderTest.fruits.value.get(2).name shouldBe "Banana"
+        }
     }
 
     @Test
@@ -143,7 +163,12 @@ internal class FruitListViewModelTest {
                 Fruit(name = "Cherry", nutritions = Nutritions(sugar = 11f)),
             ),
             type = FruitListViewModel.NutritionSortType.SUGAR
-        )
+        ) {
+            systemUnderTest.fruits.value.shouldHaveSize(3)
+            systemUnderTest.fruits.value.get(0).name shouldBe "Apple"
+            systemUnderTest.fruits.value.get(1).name shouldBe "Cherry"
+            systemUnderTest.fruits.value.get(2).name shouldBe "Banana"
+        }
     }
 
     @Test
@@ -267,18 +292,17 @@ internal class FruitListViewModelTest {
         }
     }
 
-    private fun nutritionSortTestCase(fruits: List<Fruit>, type: FruitListViewModel.NutritionSortType) {
+    private fun nutritionSortTestCase(
+        fruits: List<Fruit>,
+        type: FruitListViewModel.NutritionSortType,
+        assertion: List<Fruit>.(List<Fruit>) -> Unit
+    ) {
         fakeFruitApi.fruits = fruits
         systemUnderTest.initialize()
 
         systemUnderTest.sortByNutrition(nutrition = type)
 
-        assertSoftly(systemUnderTest.fruits.value) {
-            systemUnderTest.fruits.value.shouldHaveSize(3)
-            systemUnderTest.fruits.value.get(0).name shouldBe "Apple"
-            systemUnderTest.fruits.value.get(1).name shouldBe "Cherry"
-            systemUnderTest.fruits.value.get(2).name shouldBe "Banana"
-        }
+        assertSoftly(systemUnderTest.fruits.value, assertion)
     }
 }
 
