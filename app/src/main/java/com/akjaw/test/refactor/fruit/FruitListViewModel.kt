@@ -23,16 +23,16 @@ class FruitListViewModel(
     private val fruitApi: FruitApi,
 ) : ViewModel() {
 
-    companion object {
-        const val CARBOHYDRATES = 1
-        const val PROTEIN = 2
-        const val FAT = 3
-        const val CALORIES = 4
-        const val SUGAR = 5
-        const val NO_SORTING = 6
+    enum class NutritionSortType {
+        CARBOHYDRATES,
+        PROTEIN,
+        FAT,
+        CALORIES,
+        SUGAR,
+        NO_SORTING,
     }
 
-    private val currentNutritionSort = MutableStateFlow(-1)
+    private val currentNutritionSort = MutableStateFlow(NutritionSortType.NO_SORTING)
     private val currentSearchQuery = MutableStateFlow("")
     private val originalFruits = MutableStateFlow(emptyList<Fruit>())
     val favoriteFruitIds = MutableStateFlow(emptyList<Int>())
@@ -51,7 +51,7 @@ class FruitListViewModel(
         originalFruits.value = fruitApi.getFruits()
     }
 
-    fun sortByNutrition(nutrition: Int) {
+    fun sortByNutrition(nutrition: NutritionSortType) {
         currentNutritionSort.value = nutrition
     }
 
@@ -67,14 +67,14 @@ class FruitListViewModel(
     private fun List<Fruit>.filter(searchQuery: String) =
         filter { it.name.contains(searchQuery, ignoreCase = true) }
 
-    private fun List<Fruit>.sort(nutrition: Int, favoriteIds: List<Int>): List<Fruit> =
+    private fun List<Fruit>.sort(nutrition: NutritionSortType, favoriteIds: List<Int>): List<Fruit> =
         when (nutrition) {
-            CARBOHYDRATES -> sortedBy { it.nutritions.carbohydrates }
-            PROTEIN -> sortedBy { it.nutritions.protein }
-            FAT -> sortedBy { it.nutritions.fat }
-            CALORIES -> sortedBy { it.nutritions.calories }
-            SUGAR -> sortedBy { it.nutritions.sugar }
-            else -> sortedBy { it.name }
+            NutritionSortType.CARBOHYDRATES -> sortedBy { it.nutritions.carbohydrates }
+            NutritionSortType.PROTEIN -> sortedBy { it.nutritions.protein }
+            NutritionSortType.FAT -> sortedBy { it.nutritions.fat }
+            NutritionSortType.CALORIES -> sortedBy { it.nutritions.calories }
+            NutritionSortType.SUGAR -> sortedBy { it.nutritions.sugar }
+            NutritionSortType.NO_SORTING -> sortedBy { it.name }
                 .sortedBy { favoriteIds.contains(it.id).not() }
         }
 }

@@ -87,16 +87,6 @@ internal class FruitListViewModelTest {
     }
 
     @Test
-    fun `Sorting by an invalid nutrition does not update the state`() {
-        fakeFruitApi.fruits = FRUITS
-        systemUnderTest.initialize()
-
-        systemUnderTest.sortByNutrition(-1)
-
-        systemUnderTest.fruits.value shouldBe FRUITS
-    }
-
-    @Test
     fun `Sorting by CARBOHYDRATES updates the state correctly`() {
         fakeFruitApi.fruits = listOf(
                 Fruit(name = "Apple", nutritions = Nutritions(carbohydrates = 10f)),
@@ -105,7 +95,7 @@ internal class FruitListViewModelTest {
             )
         systemUnderTest.initialize()
 
-        systemUnderTest.sortByNutrition(nutrition = FruitListViewModel.CARBOHYDRATES)
+        systemUnderTest.sortByNutrition(nutrition = FruitListViewModel.NutritionSortType.CARBOHYDRATES)
 
         assertSoftly(systemUnderTest.fruits.value) {
             systemUnderTest.fruits.value.shouldHaveSize(3)
@@ -124,7 +114,7 @@ internal class FruitListViewModelTest {
             )
         systemUnderTest.initialize()
 
-        systemUnderTest.sortByNutrition(nutrition = FruitListViewModel.PROTEIN)
+        systemUnderTest.sortByNutrition(nutrition = FruitListViewModel.NutritionSortType.PROTEIN)
 
         assertSoftly(systemUnderTest.fruits.value) {
             systemUnderTest.fruits.value.shouldHaveSize(3)
@@ -143,7 +133,7 @@ internal class FruitListViewModelTest {
             )
         systemUnderTest.initialize()
 
-        systemUnderTest.sortByNutrition(nutrition = FruitListViewModel.FAT)
+        systemUnderTest.sortByNutrition(nutrition = FruitListViewModel.NutritionSortType.FAT)
 
         assertSoftly(systemUnderTest.fruits.value) {
             systemUnderTest.fruits.value.shouldHaveSize(3)
@@ -162,7 +152,7 @@ internal class FruitListViewModelTest {
             )
         systemUnderTest.initialize()
 
-        systemUnderTest.sortByNutrition(nutrition = FruitListViewModel.CALORIES)
+        systemUnderTest.sortByNutrition(nutrition = FruitListViewModel.NutritionSortType.CALORIES)
 
         assertSoftly(systemUnderTest.fruits.value) {
             systemUnderTest.fruits.value.shouldHaveSize(3)
@@ -181,7 +171,7 @@ internal class FruitListViewModelTest {
             )
         systemUnderTest.initialize()
 
-        systemUnderTest.sortByNutrition(nutrition = FruitListViewModel.SUGAR)
+        systemUnderTest.sortByNutrition(nutrition = FruitListViewModel.NutritionSortType.SUGAR)
 
         assertSoftly(systemUnderTest.fruits.value) {
             systemUnderTest.fruits.value.shouldHaveSize(3)
@@ -199,7 +189,7 @@ internal class FruitListViewModelTest {
             Fruit(name = "Cherry", nutritions = Nutritions(carbohydrates = 2f)),
         )
         systemUnderTest.initialize()
-        systemUnderTest.sortByNutrition(FruitListViewModel.CARBOHYDRATES)
+        systemUnderTest.sortByNutrition(FruitListViewModel.NutritionSortType.CARBOHYDRATES)
 
         systemUnderTest.filterByName("a")
 
@@ -220,7 +210,7 @@ internal class FruitListViewModelTest {
         systemUnderTest.initialize()
         systemUnderTest.filterByName("a")
 
-        systemUnderTest.sortByNutrition(FruitListViewModel.CARBOHYDRATES)
+        systemUnderTest.sortByNutrition(FruitListViewModel.NutritionSortType.CARBOHYDRATES)
 
         assertSoftly(systemUnderTest.fruits.value) {
             shouldHaveSize(2)
@@ -237,11 +227,11 @@ internal class FruitListViewModelTest {
             Fruit(name = "Cherry", nutritions = Nutritions(carbohydrates = 2f)),
         )
         systemUnderTest.initialize()
-        systemUnderTest.sortByNutrition(FruitListViewModel.CARBOHYDRATES)
+        systemUnderTest.sortByNutrition(FruitListViewModel.NutritionSortType.CARBOHYDRATES)
 
-        systemUnderTest.sortByNutrition(FruitListViewModel.NO_SORTING)
-        systemUnderTest.sortByNutrition(FruitListViewModel.NO_SORTING)
-        systemUnderTest.sortByNutrition(FruitListViewModel.NO_SORTING)
+        systemUnderTest.sortByNutrition(FruitListViewModel.NutritionSortType.NO_SORTING)
+        systemUnderTest.sortByNutrition(FruitListViewModel.NutritionSortType.NO_SORTING)
+        systemUnderTest.sortByNutrition(FruitListViewModel.NutritionSortType.NO_SORTING)
 
         assertSoftly(systemUnderTest.fruits.value) {
             shouldHaveSize(3)
@@ -300,7 +290,7 @@ internal class FruitListViewModelTest {
             Fruit(name = "Cherry", id = 1),
         )
         systemUnderTest.initialize()
-        systemUnderTest.sortByNutrition(FruitListViewModel.CARBOHYDRATES)
+        systemUnderTest.sortByNutrition(FruitListViewModel.NutritionSortType.CARBOHYDRATES)
 
         systemUnderTest.addToFavorite(1)
 

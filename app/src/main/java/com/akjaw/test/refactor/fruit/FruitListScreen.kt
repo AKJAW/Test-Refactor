@@ -59,7 +59,7 @@ private fun FruitListScreenContent(
     fruits: List<Fruit>,
     favorites: List<Int>,
     filterByName: (String) -> Unit,
-    sortByNutrition: (Int) -> Unit,
+    sortByNutrition: (FruitListViewModel.NutritionSortType) -> Unit,
     addToFavorite: (Int) -> Unit
 ) {
     Column(Modifier.fillMaxSize()) {
@@ -78,7 +78,7 @@ private fun FruitListScreenContent(
 @Composable
 private fun TopActions(
     filterByName: (String) -> Unit,
-    sortByNutrition: (Int) -> Unit,
+    sortByNutrition: (FruitListViewModel.NutritionSortType) -> Unit,
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var isDropDownShown by remember { mutableStateOf(false) }
@@ -101,12 +101,12 @@ private fun TopActions(
             )
             DropdownMenu(expanded = isDropDownShown, onDismissRequest = { isDropDownShown = false }) {
                 Column {
-                    Text("No sorting", Modifier.clickable { sortByNutrition(FruitListViewModel.NO_SORTING) })
-                    Text("Carbohydrates", Modifier.clickable { sortByNutrition(FruitListViewModel.CARBOHYDRATES) })
-                    Text("Protein", Modifier.clickable { sortByNutrition(FruitListViewModel.PROTEIN) })
-                    Text("Fat", Modifier.clickable { sortByNutrition(FruitListViewModel.FAT) })
-                    Text("Calories", Modifier.clickable { sortByNutrition(FruitListViewModel.CALORIES) })
-                    Text("Sugar", Modifier.clickable { sortByNutrition(FruitListViewModel.SUGAR) })
+                    Text("No sorting", Modifier.clickable { sortByNutrition(FruitListViewModel.NutritionSortType.NO_SORTING) })
+                    Text("Carbohydrates", Modifier.clickable { sortByNutrition(FruitListViewModel.NutritionSortType.CARBOHYDRATES) })
+                    Text("Protein", Modifier.clickable { sortByNutrition(FruitListViewModel.NutritionSortType.PROTEIN) })
+                    Text("Fat", Modifier.clickable { sortByNutrition(FruitListViewModel.NutritionSortType.FAT) })
+                    Text("Calories", Modifier.clickable { sortByNutrition(FruitListViewModel.NutritionSortType.CALORIES) })
+                    Text("Sugar", Modifier.clickable { sortByNutrition(FruitListViewModel.NutritionSortType.SUGAR) })
                 }
             }
         }
