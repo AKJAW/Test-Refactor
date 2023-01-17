@@ -4,6 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class FruitListViewModelFactory : ViewModelProvider.Factory {
@@ -31,8 +35,14 @@ class FruitListViewModel(
     private var currentNutritionSort: Int = -1
     private var currentSearchQuery: String = ""
     private var originalFruits = emptyList<Fruit>()
-    val fruits = MutableStateFlow(originalFruits)
+    private val mutableFruits = MutableStateFlow(originalFruits)
     val favoriteFruitIds = MutableStateFlow(emptyList<Int>())
+    val fruits: StateFlow<List<Fruit>> = combine(
+        mutableFruits,
+        favoriteFruitIds,
+    ) { fruits, favoriteIds ->
+        fruits.sort(currentNutritionSort, favoriteIds)
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     fun initialize() = viewModelScope.launch {
         originalFruits = fruitApi.getFruits()
@@ -41,24 +51,16 @@ class FruitListViewModel(
 
     fun sortByNutrition(nutrition: Int) {
         currentNutritionSort = nutrition
-        when (nutrition) {
-            CARBOHYDRATES -> fruits.value = fruits.value.sortedBy { it.nutritions.carbohydrates }
-            PROTEIN -> fruits.value = fruits.value.sortedBy { it.nutritions.protein }
-            FAT -> fruits.value = fruits.value.sortedBy { it.nutritions.fat }
-            CALORIES -> fruits.value = fruits.value.sortedBy { it.nutritions.calories }
-            SUGAR -> fruits.value = fruits.value.sortedBy { it.nutritions.sugar }
-            else -> fruits.value = fruits.value
-                .sortedBy { it.name }
-                .sortedBy { favoriteFruitIds.value.contains(it.id).not() }
-        }
+        mutableFruits.value = mutableFruits.value
+            .sort(nutrition, favoriteFruitIds.value)
     }
 
     fun filterByName(searchQuery: String) {
         currentSearchQuery = searchQuery
         if (searchQuery == "") {
-            fruits.value = originalFruits
+            mutableFruits.value = originalFruits
         } else {
-            fruits.value = originalFruits.filter { it.name.contains(searchQuery, ignoreCase = true) }
+            mutableFruits.value = originalFruits.filter { it.name.contains(searchQuery, ignoreCase = true) }
         }
         sortByNutrition(currentNutritionSort)
     }
@@ -66,8 +68,18 @@ class FruitListViewModel(
     fun addToFavorite(fruitId: Int) {
         if (favoriteFruitIds.value.contains(fruitId)) return
         favoriteFruitIds.value = favoriteFruitIds.value + fruitId
-        sortByNutrition(currentNutritionSort)
     }
+
+    private fun List<Fruit>.sort(nutrition: Int, favoriteIds: List<Int>): List<Fruit> =
+        when (nutrition) {
+            CARBOHYDRATES -> sortedBy { it.nutritions.carbohydrates }
+            PROTEIN -> sortedBy { it.nutritions.protein }
+            FAT -> sortedBy { it.nutritions.fat }
+            CALORIES -> sortedBy { it.nutritions.calories }
+            SUGAR -> sortedBy { it.nutritions.sugar }
+            else -> sortedBy { it.name }
+                .sortedBy { favoriteIds.contains(it.id).not() }
+        }
 }
 
 /* Response
