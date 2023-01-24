@@ -32,43 +32,40 @@ class FruitListViewModel(
         const val NO_SORTING = 6
     }
 
-    private var currentNutritionSort: Int = -1
+    private val currentNutritionSort = MutableStateFlow(-1)
     private val currentSearchQuery = MutableStateFlow("")
     private val originalFruits = MutableStateFlow(emptyList<Fruit>())
-    private val mutableFruits = MutableStateFlow(originalFruits.value)
     val favoriteFruitIds = MutableStateFlow(emptyList<Int>())
     val fruits: StateFlow<List<Fruit>> = combine(
-        mutableFruits,
+        originalFruits,
         currentSearchQuery,
+        currentNutritionSort,
         favoriteFruitIds
-    ) { fruits, searchQuery, favoriteIds ->
+    ) { fruits, searchQuery, nutritionSort, favoriteIds ->
         fruits
             .filter(searchQuery)
-            .sort(currentNutritionSort, favoriteIds)
+            .sort(nutritionSort, favoriteIds)
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     fun initialize() = viewModelScope.launch {
         originalFruits.value = fruitApi.getFruits()
-        filterByName(currentSearchQuery.value)
     }
 
     fun sortByNutrition(nutrition: Int) {
-        currentNutritionSort = nutrition
-        mutableFruits.value = mutableFruits.value.sort(nutrition, favoriteFruitIds.value)
+        currentNutritionSort.value = nutrition
     }
 
     fun filterByName(searchQuery: String) {
         currentSearchQuery.value = searchQuery
-        mutableFruits.value = originalFruits.value.filter(searchQuery)
     }
-
-    private fun List<Fruit>.filter(searchQuery: String) =
-        filter { it.name.contains(searchQuery, ignoreCase = true) }
 
     fun addToFavorite(fruitId: Int) {
         if (favoriteFruitIds.value.contains(fruitId)) return
         favoriteFruitIds.value = favoriteFruitIds.value + fruitId
     }
+
+    private fun List<Fruit>.filter(searchQuery: String) =
+        filter { it.name.contains(searchQuery, ignoreCase = true) }
 
     private fun List<Fruit>.sort(nutrition: Int, favoriteIds: List<Int>): List<Fruit> =
         when (nutrition) {
